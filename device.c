@@ -11,6 +11,7 @@
 #include "device.h"
 #include "fb.h"
 #include "videobuf.h"
+//#include "libx.h"
 
 extern const char *vcam_dev_name;
 extern unsigned char allow_pix_conversion;
@@ -675,6 +676,8 @@ static void submit_copy_buffer(struct vcam_out_buffer *out_buf,
                                struct vcam_device *dev)
 {
     void *in_vbuf_ptr, *out_vbuf_ptr;
+    //void * x_ptr = NULL;
+    //int frame_size = 0;
 
     in_vbuf_ptr = in_buf->data;
     if (!in_vbuf_ptr) {
@@ -725,6 +728,22 @@ static void submit_copy_buffer(struct vcam_out_buffer *out_buf,
         }
     }
     out_buf->vb.vb2_buf.timestamp = ktime_get_ns();
+    /*if (dev->output_format.pixelformat == V4L2_PIX_FMT_YUYV)
+        frame_size = dev->output_format.height* dev->output_format.width * 2;
+    else if(dev->output_format.pixelformat == V4L2_PIX_FMT_RGB24)
+        frame_size = dev->output_format.height* dev->output_format.width * 3;
+    else
+	frame_size = 0;
+
+    if(frame_size) {
+        void *end;
+        x_ptr = kmalloc(frame_size*8, GFP_KERNEL);
+        x_init();
+        end = x_compress(out_vbuf_ptr, frame_size, x_ptr);
+        memcpy(out_vbuf_ptr, x_ptr, (char *)end - (char *)x_ptr);
+        kfree(x_ptr);
+    }*/
+
     vb2_buffer_done(&out_buf->vb.vb2_buf, VB2_BUF_STATE_DONE);
 }
 
